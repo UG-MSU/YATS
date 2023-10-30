@@ -29,7 +29,7 @@ class user(AbstractUser):
     school = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
     role = models.IntegerField(choices=ROLES.choices, default=ROLES.student)
-
+    User = models.Manager()
     class Meta:
         db_table = "user"
     
@@ -42,7 +42,7 @@ class contest(models.Model):
     description = models.CharField(max_length=1000, blank=True)
     password = models.CharField(max_length=25, blank=True)
     creator = models.ForeignKey('user', on_delete=models.CASCADE, blank=True, default='')
-
+    Contest = models.Manager()
 
     class Meta:
         db_table = "contest"
