@@ -4,58 +4,57 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('main', '0001_initial'),
+        ("main", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='user',
+            name="user",
             options={},
         ),
         migrations.AlterModelTable(
-            name='checker',
-            table='checker',
+            name="checker",
+            table="checker",
         ),
         migrations.AlterModelTable(
-            name='contest',
-            table='contest',
+            name="contest",
+            table="contest",
         ),
         migrations.AlterModelTable(
-            name='contest_task',
-            table='contest_task',
+            name="contest_task",
+            table="contest_task",
         ),
         migrations.AlterModelTable(
-            name='contest_user',
-            table='contest_user',
+            name="contest_user",
+            table="contest_user",
         ),
         migrations.AlterModelTable(
-            name='legend',
-            table='legend',
+            name="legend",
+            table="legend",
         ),
         migrations.AlterModelTable(
-            name='report_sub',
-            table='report_sub',
+            name="report_sub",
+            table="report_sub",
         ),
         migrations.AlterModelTable(
-            name='review_message',
-            table='review_message',
+            name="review_message",
+            table="review_message",
         ),
         migrations.AlterModelTable(
-            name='submission',
-            table='submission',
+            name="submission",
+            table="submission",
         ),
         migrations.AlterModelTable(
-            name='task',
-            table='task',
+            name="task",
+            table="task",
         ),
         migrations.AlterModelTable(
-            name='test',
-            table='test',
+            name="test",
+            table="test",
         ),
         migrations.AlterModelTable(
-            name='user',
-            table='user',
+            name="user",
+            table="user",
         ),
     ]
