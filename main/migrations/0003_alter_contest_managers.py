@@ -5,16 +5,15 @@ import django.db.models.manager
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('main', '0002_alter_user_options_alter_checker_table_and_more'),
+        ("main", "0002_alter_user_options_alter_checker_table_and_more"),
     ]
 
     operations = [
         migrations.AlterModelManagers(
-            name='contest',
+            name="contest",
             managers=[
-                ('Contest', django.db.models.manager.Manager()),
+                ("Contest", django.db.models.manager.Manager()),
             ],
         ),
     ]
