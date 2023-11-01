@@ -1,6 +1,6 @@
 from django.contrib.auth.models import AnonymousUser
 
-from ..models import contest, user, contest_user, task
+from ..models import contest, user, contest_user, task, submission
 from . import serializers
 from django.http import HttpResponse
 from rest_framework import generics, status, viewsets
@@ -42,4 +42,19 @@ class MyTasksListView(generics.ListAPIView):
             user = 1
         tsks = task.Task.all()
         data = serializers.TaskSerializer(tsks, many=True).data
+        return Response(data)
+
+class MySubmissionsListView(generics.ListAPIView):
+    serializer_class = serializers.SumbissionSerializer
+    queryset = submission.Submission.all()
+
+    def get(self, request):
+        user = self.request.user
+        if user == AnonymousUser():
+            # return HttpResponse(f"USER IS ANONIMUS")
+            user = 1
+        submissions = submission.Submission.filter(
+            id_user_id = user
+        )
+        data = serializers.SumbissionSerializer(submissions, many=True).data
         return Response(data)

@@ -1,4 +1,4 @@
-from ..models import contest, task
+from ..models import contest, task, submission
 from rest_framework import serializers
 
 
@@ -17,4 +17,14 @@ class TaskSerializer(serializers.ModelSerializer):
         fields = [
             "task_name",
             "statement",
+        ]
+
+class SumbissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = submission
+        fields = [
+            "status",
+            "lang",
+            "id_contest_id",
+            "id_task_id",
         ]
