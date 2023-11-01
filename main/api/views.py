@@ -25,13 +25,13 @@ class MyContestsListView(generics.ListAPIView):
         cu = contest_user.Contest_user.filter(id_user=user)
         cnt = contest.Contest.all()
         queryset = cnt
-        data = serializers.ContestSerializer(cnt).data
+        data = serializers.ContestSerializer(cnt, many=True).data
         return Response(data)
 
 
 class MyTasksListView(generics.ListAPIView):
     serializer_class = serializers.TaskSerializer
-
+    queryset = task.Task.all()
     def get(self, request):
         user = self.request.user
         if user == AnonymousUser():
@@ -39,7 +39,7 @@ class MyTasksListView(generics.ListAPIView):
             user = 1
         cu = contest_user.Contest_user.filter(id_user=user)
         tsks = task.Task.all()
-        queryset = tsks
         serializer = serializers.ContestSerializer(tsks)
-        data = serializers.TaskSerializer(tsks).data
+
+        data = serializers.TaskSerializer(tsks, many=True).data
         return Response(data)
