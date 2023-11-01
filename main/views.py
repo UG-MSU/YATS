@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from main.models import contest, user
+from main.models import contest, user, contest_user, contest_task
+from django.contrib.auth.models import AnonymousUser
 
 
 def add_contest(request):
