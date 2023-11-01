@@ -44,6 +44,7 @@ class MyTasksListView(generics.ListAPIView):
         data = serializers.TaskSerializer(tsks, many=True).data
         return Response(data)
 
+
 class MySubmissionsListView(generics.ListAPIView):
     serializer_class = serializers.SumbissionSerializer
     queryset = submission.Submission.all()
@@ -53,8 +54,6 @@ class MySubmissionsListView(generics.ListAPIView):
         if user == AnonymousUser():
             # return HttpResponse(f"USER IS ANONIMUS")
             user = 1
-        submissions = submission.Submission.filter(
-            id_user_id = user
-        )
+        submissions = submission.Submission.filter(id_user_id=user)
         data = serializers.SumbissionSerializer(submissions, many=True).data
         return Response(data)

@@ -19,6 +19,7 @@ class TaskSerializer(serializers.ModelSerializer):
             "statement",
         ]
 
+
 class SumbissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = submission
