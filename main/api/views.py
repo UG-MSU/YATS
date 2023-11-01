@@ -23,23 +23,23 @@ class MyContestsListView(generics.ListAPIView):
             # return HttpResponse(f"USER IS ANONIMUS")
             user = 1
         cu = contest_user.Contest_user.filter(id_user=user)
-        cnt = contest.Contest.all()
-        queryset = cnt
-        data = serializers.ContestSerializer(cnt, many=True).data
+        cont = [el.id_contest for el in cu]
+        conts = []
+        for i in cont:
+            conts.append(contest.Contest.get(id_contest=i.id_contest))
+        data = serializers.ContestSerializer(conts, many=True).data
         return Response(data)
 
 
 class MyTasksListView(generics.ListAPIView):
     serializer_class = serializers.TaskSerializer
     queryset = task.Task.all()
+
     def get(self, request):
         user = self.request.user
         if user == AnonymousUser():
             # return HttpResponse(f"USER IS ANONIMUS")
             user = 1
-        cu = contest_user.Contest_user.filter(id_user=user)
         tsks = task.Task.all()
-        serializer = serializers.ContestSerializer(tsks)
-
         data = serializers.TaskSerializer(tsks, many=True).data
         return Response(data)
