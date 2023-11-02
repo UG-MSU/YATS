@@ -2,6 +2,11 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
+class UserRoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = ['role']
+
 class UserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
             required=True,

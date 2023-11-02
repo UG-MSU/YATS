@@ -16,9 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-import main
-
+import main, contest, authorization
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("main/", include("main.urls")),
+    path("contest/", include ("contest.urls"))
 ]

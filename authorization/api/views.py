@@ -6,7 +6,8 @@ from rest_framework.response import Response
 from django.forms import model_to_dict
 from main.models import contest, user
 from django.contrib.auth import authenticate, login
-
+from rest_framework import generics
+from .serializers import UserRoleSerializer
 def show(request):
     return HttpResponse(request.user.username)
 
@@ -20,3 +21,10 @@ class UserAPIView(APIView):
             login(request, User)
             return show(request=request)
         return Response({'error': "wrong username or password"})
+class UserRoleAPIView(generics.ListAPIView):
+    queryset = user.User.all()
+    serializer_class = UserRoleSerializer
+    def get(self, request):
+        if request.user is None:
+            return Response({'error': 'user is not authenticated'})
+        return Response({'error' : 'success', 'role' : request.user.role})
