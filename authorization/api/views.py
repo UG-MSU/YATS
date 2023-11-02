@@ -1,12 +1,13 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from rest_framework import generics
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.forms import model_to_dict
 from main.models import contest, user
 from django.contrib.auth import authenticate, login
+from rest_framework import generics
+from .serializers import UserRoleSerializer
 from authorization.api import serializers
 
 def show(request):
@@ -37,3 +38,11 @@ class RegUserAPIView(generics.ListAPIView):
             login(request, User)
             return Response({"error": "success"})
         return Response({"error": "something went wrong"})
+
+class UserRoleAPIView(generics.ListAPIView):
+    queryset = user.User.all()
+    serializer_class = UserRoleSerializer
+    def get(self, request):
+        if request.user is None:
+            return Response({'error': 'user is not authenticated'})
+        return Response({'error' : 'success', 'role' : request.user.role})

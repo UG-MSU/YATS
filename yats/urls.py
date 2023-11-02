@@ -23,5 +23,4 @@ urlpatterns = [
     path("main/", include("main.urls")),
     path("contest/", include("contest.urls")),
     path('auth/', include('authorization.urls')),
-    #path('api/v1/drf-auth/', include('rest_framework.urls')),
 ]
