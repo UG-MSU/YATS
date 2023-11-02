@@ -10,7 +10,6 @@ class ContestSerializer(serializers.ModelSerializer):
             "password",
         ]  # if not declared, all fields of the model will be shown
 
-
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = task

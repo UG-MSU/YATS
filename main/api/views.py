@@ -7,12 +7,6 @@ from rest_framework import generics, status, viewsets
 from rest_framework.response import Response
 
 
-class ContestListView(generics.ListAPIView):
-    queryset = contest.Contest.all()
-    print(queryset)
-    serializer_class = serializers.ContestSerializer
-
-
 class MyContestsListView(generics.ListAPIView):
     serializer_class = serializers.ContestSerializer
     queryset = contest.Contest.all()

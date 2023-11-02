@@ -16,9 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-import main
+import main, authorization, rest_framework, contest
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("main/", include("main.urls")),
+    path("contest/", include("contest.urls")),
+    path('auth/', include('authorization.urls')),
+    #path('api/v1/drf-auth/', include('rest_framework.urls')),
 ]

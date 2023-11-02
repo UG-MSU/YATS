@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import UserManager
 
 
 def user_directory_path(instance, filename):
@@ -30,7 +31,7 @@ class user(AbstractUser):
     school = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
     role = models.IntegerField(choices=ROLES.choices, default=ROLES.student)
-    User = models.Manager()
+    User = UserManager()
 
     class Meta:
         db_table = "user"
