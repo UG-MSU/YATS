@@ -1,8 +1,9 @@
 from django.contrib import admin
 from django.urls import path, include
-from contest.api.views import ContestAPIView
+from contest.api import views
 
 urlpatterns = [
-    path("all/", ContestAPIView.as_view()),
-
+    path("create-contest/", views.CreateContestAPIView.as_view()),
+    path("user-contests/", views.ContestAPIView.as_view()),
+    path("contest-tasks/", views.TaskAPIView.as_view()),
 ]
