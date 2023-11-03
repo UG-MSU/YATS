@@ -1,6 +1,8 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import UserManager
+
 
 
 def user_directory_path(instance, filename):
@@ -30,6 +32,7 @@ class user(AbstractUser):
     school = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
     role = models.IntegerField(choices=ROLES.choices, default=ROLES.student)
+    User = UserManager()
 
     class Meta:
         db_table = "user"
@@ -43,6 +46,7 @@ class contest(models.Model):
     creator = models.ForeignKey(
         "user", on_delete=models.CASCADE, blank=True, default=""
     )
+    Contest = models.Manager()
 
     class Meta:
         db_table = "contest"
