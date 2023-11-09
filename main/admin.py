@@ -1,5 +1,17 @@
 from django.contrib import admin
-from .models import task, contest, test, submission, report_sub, review_message, legend, contest_user, contest_task, checker, user
+from .models import (
+    task,
+    contest,
+    test,
+    submission,
+    report_sub,
+    review_message,
+    legend,
+    contest_user,
+    contest_task,
+    checker,
+    user,
+)
 
 
 admin.site.register(user)
@@ -13,5 +25,3 @@ admin.site.register(legend)
 admin.site.register(contest_user)
 admin.site.register(contest_task)
 admin.site.register(checker)
-
-
