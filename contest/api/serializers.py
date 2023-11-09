@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from main.models import contest, task, submission, contest_user, contest_task
+from main.models import contest, task, submission, contest_user, contest_task, user
 
 class CreateContestSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,3 +32,10 @@ class SubmissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = submission
         fields = ("status", "lang", "id_task", "id_contest")
+        
+        
+class UserSerializer(serializers.ModelSerializer):
+    role = serializers.CharField(source='user.role')
+    class Meta:
+        model = user
+        fields = ("ROLES")
