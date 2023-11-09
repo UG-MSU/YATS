@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.forms import model_to_dict
-from main.models import contest, task, submission, contest_user, contest_task
+from main.models import contest, task, submission, contest_user, contest_task, user as us
 from contest.api import serializers
 from django.contrib.auth import authenticate, login
 from rest_framework import generics
@@ -82,3 +82,15 @@ class SubmissionAPIView(generics.ListAPIView):
         submissions = submission.Submission.filter(id_user_id=user)
         data = serializers.SubmissionSerializer(submissions, many=True).data
         return Response(data)
+    
+    
+class HasPermissionToCreateContestAPIEView(generics.ListAPIView):
+    serializer_class = serializers.UserSerializer
+    queryset = us.User.all()
+    def get(self, request):
+        user = request.user
+        if user.is_anonymous:
+            user = us.objects.get(id=1)
+        return Response({"has_permission":user.role})
+    
+            
