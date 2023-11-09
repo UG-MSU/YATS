@@ -4,7 +4,6 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import UserManager
 
 
-
 def user_directory_path(instance, filename):
     return "user_{0}/{1}".format(instance.user.id, filename)
 

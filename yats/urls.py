@@ -21,5 +21,5 @@ import main, authorization, rest_framework, contest
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("contest/", include("contest.urls")),
-    path('auth/', include('authorization.urls')),
+    path("auth/", include("authorization.urls")),
 ]

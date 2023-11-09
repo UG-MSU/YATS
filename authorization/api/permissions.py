@@ -7,7 +7,6 @@ from django.db import models
 
 class UserPermission(permissions.BasePermission):
     def has_permission(self, request: Request, view: GenericAPIView) -> bool:
-
         if view.action == "create":
             return True  # anyone can create user, no additional checks needed.
         if view.action == "list":
@@ -16,8 +15,10 @@ class UserPermission(permissions.BasePermission):
             return True  # defer to has_object_permission
         else:
             return False
-    def has_object_permission(self, request: Request, view: GenericAPIView, obj: models.Model) -> bool:
 
+    def has_object_permission(
+        self, request: Request, view: GenericAPIView, obj: models.Model
+    ) -> bool:
         if not request.user.is_authenticated:
             return False
 

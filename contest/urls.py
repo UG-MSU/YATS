@@ -6,5 +6,9 @@ urlpatterns = [
     path("create-contest/", views.CreateContestAPIView.as_view()),
     path("user-contests/", views.ContestAPIView.as_view()),
     path("contest-tasks/", views.TaskAPIView.as_view()),
-    path("has-permission-to-create-contest/", views.HasPermissionToCreateContestAPIEView.as_view()),
+    path(
+        "has-permission-to-create-contest/",
+        views.HasPermissionToCreateContestAPIView.as_view(),
+    ),
+    path("has-permission-to-contest/", views.HasPermissionToContestAPIView.as_view()),
 ]
