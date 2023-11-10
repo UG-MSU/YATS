@@ -55,7 +55,8 @@ class AuthUserAPIView(generics.ListAPIView):
         )
         if User is not None:
             login(request, User)
-            return Response({"error": "success"})
+            role = request.user.role
+            return Response({"error": "success", "has_permission":role})
         return Response({"error": "wrong username or password"})
 
 
