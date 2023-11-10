@@ -40,12 +40,6 @@ class SubmissionSerializer(serializers.ModelSerializer):
         fields = ("status", "lang", "id_task", "id_contest")
 
 
-class UserPermissionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = user
-        fields = "ROLES"
-
-
 class ContestPermissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = contest
