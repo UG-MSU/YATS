@@ -45,7 +45,7 @@ class ContestAPIView(generics.ListAPIView):
     def get(self, request):
         contest_id = request.GET.get("id", -1)
         user = request.user
-        if user is None:
+        if user is None or request.user.is_anonymous:
             return Response({"error": "user is not authenticated"})
         if contest_id == -1:
             user_contests = contest_user.Contest_user.filter(id_user=user)
