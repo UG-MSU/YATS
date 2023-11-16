@@ -55,8 +55,8 @@ class AuthUserAPIView(generics.ListAPIView):
         )
         if User is not None:
             login(request, User)
-            role = request.user.role
-            return Response(status=200, data={"status": "ok", "has_permission":role})
+            perm = User.has_perm(self, "USER.ADD_CONTEST")
+            return Response(status=200, data={"status": "ok", "has_permission":perm})
         return Response(status=401, data={"status": "error", "detail": "wrong username or password"})
 
 

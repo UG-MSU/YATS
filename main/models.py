@@ -36,6 +36,9 @@ class user(AbstractUser):
     class Meta:
         db_table = "user"
 
+    def is_active(self):
+       return True
+
 
 class contest(models.Model):
     id_contest = models.BigAutoField(primary_key=True)
