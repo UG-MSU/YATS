@@ -26,16 +26,16 @@ class CreateContestAPIView(generics.ListAPIView):
 
     def post(self, request):
         if request.user is None:
-            return Response({"error": "user is not authenticated"})
+            return Response(status=401, data={"status": "error", "detail": "user is not authenticated"})
         if 7 < len(request.data["password"]) < 32:
-            return Response({"error": "invalid size of password"})
+            return Response(status=401, data={"status": "error", "detail": "invalid size of password"})
         created_contest = contest(
             name=request.data["name"],
             password=request.data["password"],
             creator=request.user,
         )
         created_contest.save()
-        return Response({"error": "success"})
+        return Response(status=200, data={"status": "ok"})
 
 
 class ContestAPIView(generics.ListAPIView):
@@ -46,29 +46,30 @@ class ContestAPIView(generics.ListAPIView):
         contest_id = request.GET.get("id", -1)
         user = request.user
         if user is None or request.user.is_anonymous:
-            return Response({"error": "user is not authenticated"})
+            return Response(status=401, data={"status": "error", "detail": "user is not authenticated"})
         if contest_id == -1:
             user_contests = contest_user.Contest_user.filter(id_user=user)
             data = serializers.ContestSerializer(user_contests, many=True).data
-            return Response({"error": "success", "contests": data})
+            return Response(status=200, data={"status": "ok", "contests": data})
         try:
             cont = contest.Contest.get(id_contest=contest_id)
             current_contest = contest_user.Contest_user.get(
                 id_user=user, id_contest=cont
             )
             return Response(
-                {
-                    "error": "success",
+                status=200,
+                data={
+                    "status": "ok",
                     "contest": serializers.ContestSerializer(current_contest).data,
                 }
             )
         except:
-            return Response({"error": "incorrect contest"})
+            return Response(status=400, data={"status": "error", "detail": "incorrect contest"})
 
     def put(self, request):
         user = self.request.user
         if user is None:
-            return Response({"error": "user is not authenticated"})
+            return Response(status=401, data={"status": "error", "detail": "user is not authenticated"})
         try:
             contest_id = request.GET.get("id", -1)
             cont = contest.Contest.get(id_contest=contest_id)
@@ -77,13 +78,14 @@ class ContestAPIView(generics.ListAPIView):
             )
             update_contest(request, current_contest.id_contest)
             return Response(
-                {
-                    "error": "success",
+                status=200,
+                data={
+                    "status": "ok",
                     "contest": serializers.ContestSerializer(current_contest).data,
                 }
             )
         except:
-            return Response({"error": "incorrect contest"})
+            return Response(status=400, data={"status": "error", "detail": "incorrect contest"})
 
 
 class TaskAPIView(generics.ListAPIView):
@@ -93,10 +95,10 @@ class TaskAPIView(generics.ListAPIView):
     def get(self, request):
         contest_id = request.GET.get("id", -1)
         if contest_id == -1:
-            return Response({"error": "contest is not defined"})
+            return Response(status=400, data={"status": "error", "detail": "contest is not defined"})
         tasks = contest_task.Contest_task.filter(id_contest=contest_id)
         data = serializers.TaskSerializer(tasks, many=True).data
-        return Response({"error": "success", "tasks": data})
+        return Response(status=200, data={"status": "ok", "tasks": data})
 
 
 class SubmissionAPIView(generics.ListAPIView):
@@ -107,7 +109,7 @@ class SubmissionAPIView(generics.ListAPIView):
         user = self.request.user
         submissions = submission.Submission.filter(id_user_id=user)
         data = serializers.SubmissionSerializer(submissions, many=True).data
-        return Response(data)
+        return Response(data.update({"status": "ok"}))
 
 
 class HasPermissionToContestAPIView(generics.ListAPIView):
@@ -126,6 +128,6 @@ class HasPermissionToContestAPIView(generics.ListAPIView):
         #     us = user.objects.get(id=1)
 
         if us.id == cont.creator_id:
-            return Response({"has_permission": "yes"})
+            return Response(status=200, data={"status": "ok", "has_permission": "yes"})
 
-        return Response({"has_permission": "no"})
+        return Response(status=200, data={"status": "ok", "has_permission": "no"})

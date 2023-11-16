@@ -56,8 +56,8 @@ class AuthUserAPIView(generics.ListAPIView):
         if User is not None:
             login(request, User)
             role = request.user.role
-            return Response({"error": "success", "has_permission":role})
-        return Response({"error": "wrong username or password"})
+            return Response(status=200, data={"status": "ok", "has_permission":role})
+        return Response(status=401, data={"status": "error", "detail": "wrong username or password"})
 
 
 class RegUserAPIView(generics.ListAPIView):
@@ -69,7 +69,7 @@ class RegUserAPIView(generics.ListAPIView):
             get_user_model().User.get(username=request.data["username"])
         except get_user_model().DoesNotExist:
             if len(request.data["password"]) < 8 or len(request.data["password"]) > 32:
-                return Response({"error": "invalid size of password"})
+                return Response(status=401, data={"status": "error", "detail": "invalid size of password"})
             created_user = get_user_model().User.create_user(
                 request.data["username"], "none@none.none", request.data["password"]
             )
@@ -80,8 +80,8 @@ class RegUserAPIView(generics.ListAPIView):
                 password=request.data["password"],
             )
             login(request, current_user)
-            return Response({"error": "success"})
-        return Response({"error": "this username already exists"})
+            return Response(status=200, data={"status": "ok"})
+        return Response(status=400, data={"status": "error", "detail": "this username already exists"})
 
 
 class UpdateUserAPIView(generics.ListAPIView):
@@ -90,17 +90,18 @@ class UpdateUserAPIView(generics.ListAPIView):
 
     def get(self, request):
         if request.user is None:
-            return Response({"error": "user is not authenticated"})
+            return Response(status=401, data={"status": "error", "detail": "user is not authenticated"})
         data = serializers.UpdateUserSerializer(request.user).data
-        return Response({"error": "success", "user": data})
+        return Response(status=200, data={"status": "ok", "user": data})
 
     def put(selfself, request):
         if request.user is None:
-            return Response({"error": "user is not authenticated"})
+            return Response(status=401, data={"status": "error", "detail": "user is not authenticated"})
         update(request)
         return Response(
-            {
-                "error": "success",
+            status=200,
+            data={
+                "status": "ok",
                 "user": serializers.UpdateUserSerializer(request.user).data,
             }
         )
@@ -112,5 +113,5 @@ class RoleUserAPIView(generics.ListAPIView):
 
     def get(self, request):
         if request.user is None:
-            return Response({"error": "user is not authenticated"})
-        return Response({"error": "success", "role": request.user.role})
+            return Response(status=401, data={"status": "error", "detail": "user is not authenticated"})
+        return Response(status=200, data={"status": "ok", "role": request.user.role})
