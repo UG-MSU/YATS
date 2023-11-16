@@ -1,3 +1,5 @@
 Django
 Django-rest-framework
+django-cors-headers
 psycopg
+requests
