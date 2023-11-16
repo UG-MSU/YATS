@@ -115,19 +115,3 @@ class SubmissionAPIView(generics.ListAPIView):
 class HasPermissionToContestAPIView(generics.ListAPIView):
     serializer_class = serializers.ContestPermissionSerializer
     queryset = contest.Contest.all()
-
-    def get(self, request):
-        us = request.user
-        contest_id = request.GET.get("id", -1)
-
-        # if contest_id == -1:
-        #     contest_id = 1
-        cont = contest.Contest.get(id_contest=contest_id)
-
-        # if us.is_anonymous:
-        #     us = user.objects.get(id=1)
-
-        if us.id == cont.creator_id:
-            return Response(status=200, data={"status": "ok", "has_permission": "yes"})
-
-        return Response(status=200, data={"status": "ok", "has_permission": "no"})
