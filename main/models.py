@@ -41,6 +41,7 @@ class user(AbstractUser):
 class contest(models.Model):
     id_contest = models.BigAutoField(primary_key=True)
     name = models.CharField(blank=True, max_length=255)
+    archived = models.BooleanField(default=False)
     description = models.CharField(max_length=1000, blank=True)
     password = models.CharField(max_length=25, blank=True)
     creator = models.ForeignKey(
@@ -130,7 +131,7 @@ class contest_user(models.Model):
     id_contest = models.ForeignKey("contest", on_delete=models.CASCADE, blank=True)
     id_user = models.ForeignKey("user", on_delete=models.CASCADE, blank=True)
     Contest_user = models.Manager()
-
+    
     class Meta:
         db_table = "contest_user"
 
