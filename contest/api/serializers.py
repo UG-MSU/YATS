@@ -2,6 +2,56 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from main.models import contest, task, submission, contest_user, contest_task, user
+from rest_framework import pagination
+from rest_framework.response import Response
+
+
+class ContestPagination(pagination.PageNumberPagination):
+    page_size = 6
+    def get_paginated_response(self, data):
+        return Response(
+            status=200,
+            data={
+                'status': 'ok',
+                'links': {
+                    'next': self.get_next_link(),
+                    'previous': self.get_previous_link()
+                },
+                'count': self.page.paginator.count,
+                'contests': data
+        })
+
+
+class TaskPagination(pagination.PageNumberPagination):
+    page_size=6
+    def get_paginated_response(self, data):
+        return Response(
+            status=200,
+            data={
+                'status': 'ok',
+                'links': {
+                    'next': self.get_next_link(),
+                    'previous': self.get_previous_link()
+                },
+                'count': self.page.paginator.count,
+                'tasks': data
+        })
+
+
+class SubmissionPagination(pagination.PageNumberPagination):
+    page_size = 6
+    def get_paginated_response(self, data):
+        return Response(
+            status=200,
+            data={
+                'status': 'ok',
+                'links': {
+                    'next': self.get_next_link(),
+                    'previous': self.get_previous_link()
+                },
+                'count': self.page.paginator.count,
+                'submissions': data
+        })
 
 
 class CreateContestSerializer(serializers.ModelSerializer):
