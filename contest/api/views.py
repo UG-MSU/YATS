@@ -8,6 +8,7 @@ from main.models import contest, task, submission, contest_user, contest_task, u
 from contest.api import serializers
 from django.contrib.auth import authenticate, login
 from rest_framework import generics
+from contest.api.serializers import ContestPagination, TaskPagination, SubmissionPagination
 
 
 def update_contest(request, contest):
@@ -45,12 +46,14 @@ class ContestAPIView(generics.ListAPIView):
     def get(self, request):
         contest_id = request.GET.get("id", -1)
         user = request.user
+        paginator = ContestPagination()
         if user is None or request.user.is_anonymous:
             return Response(status=401, data={"status": "error", "detail": "user is not authenticated"})
         if contest_id == -1:
             user_contests = contest_user.Contest_user.filter(id_user=user)
-            data = serializers.ContestSerializer(user_contests, many=True).data
-            return Response(status=200, data={"status": "ok", "contests": data})
+            paginated_user_contests = paginator.paginate_queryset(user_contests, request)
+            serializer = serializers.ContestSerializer(paginated_user_contests, many=True)
+            return paginator.get_paginated_response(serializer.data)
         try:
             cont = contest.Contest.get(id_contest=contest_id)
             current_contest = contest_user.Contest_user.get(
@@ -93,12 +96,14 @@ class TaskAPIView(generics.ListAPIView):
     queryset = task.Task.all()
 
     def get(self, request):
+        paginator = TaskPagination()
         contest_id = request.GET.get("id", -1)
         if contest_id == -1:
             return Response(status=400, data={"status": "error", "detail": "contest is not defined"})
         tasks = contest_task.Contest_task.filter(id_contest=contest_id)
-        data = serializers.TaskSerializer(tasks, many=True).data
-        return Response(status=200, data={"status": "ok", "tasks": data})
+        paginated_tasks = paginator.paginate_queryset(tasks, request)
+        serializer = serializers.TaskSerializer(paginated_tasks, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
 
 class SubmissionAPIView(generics.ListAPIView):
@@ -106,10 +111,12 @@ class SubmissionAPIView(generics.ListAPIView):
     queryset = submission.Submission.all()
 
     def get(self, request):
+        paginator = SubmissionPagination()
         user = self.request.user
         submissions = submission.Submission.filter(id_user_id=user)
-        data = serializers.SubmissionSerializer(submissions, many=True).data
-        return Response(data.update({"status": "ok"}))
+        paginated_submissions = paginator.paginate_queryset(submissions, request)
+        serializer = serializers.TaskSerializer(paginated_submissions, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
 
 class HasPermissionToContestAPIView(generics.ListAPIView):
