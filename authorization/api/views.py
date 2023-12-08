@@ -8,6 +8,10 @@ from main.models import contest, user
 from django.contrib.auth import authenticate, login
 from rest_framework import generics
 from authorization.api import serializers
+from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
 
 
 def update(request):
@@ -40,13 +44,12 @@ def update(request):
 
 
 def show(request):
-    return HttpResponse(request.user.username)
+    return HttpResponse(request.user.is_anonymous)
 
 
 class AuthUserAPIView(generics.ListAPIView):
     queryset = []
     serializer_class = serializers.RegAuthUserSerializer
-
     def post(self, request):
         User = authenticate(
             request=request,

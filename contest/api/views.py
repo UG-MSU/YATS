@@ -47,6 +47,7 @@ class ContestAPIView(generics.ListAPIView):
         contest_id = request.GET.get("id", -1)
         user = request.user
         paginator = ContestPagination()
+        print(request.user.username)
         if user is None or request.user.is_anonymous:
             return Response(status=401, data={"status": "error", "detail": "user is not authenticated"})
         if contest_id == -1:
