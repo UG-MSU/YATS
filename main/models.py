@@ -48,6 +48,7 @@ class contest(models.Model):
     creator = models.ForeignKey(
         "user", on_delete=models.CASCADE, blank=True, default=""
     )
+    archived = models.BooleanField(default=False)
     Contest = models.Manager()
 
     class Meta:

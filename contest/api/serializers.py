@@ -62,13 +62,14 @@ class CreateContestSerializer(serializers.ModelSerializer):
 
 
 class ContestSerializer(serializers.ModelSerializer):
+    id_contest = serializers.IntegerField(source="id_contest.id_contest")
     name = serializers.CharField(source="id_contest.name")
     description = serializers.CharField(source="id_contest.description")
     password = serializers.CharField(source="id_contest.password")
-
+    archived = serializers.BooleanField(source="id_contest.archived", default=False)
     class Meta:
         model = contest_user
-        fields = ("name", "description", "password")
+        fields = ("name", "description", "password", "archived", "id_contest")
         extra_kwargs = {"password": {"write_only": True}}
 
 
