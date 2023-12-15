@@ -18,7 +18,11 @@ def update_contest(request, contest):
         contest.description = request.data["description"]
     if len(request.data["password"]) > 7 and len(request.data["password"]) < 26:
         contest.password = request.data["description"]
-    contest.save()
+    try:
+        contest.archived = request.data["archived"]
+        contest.save()
+    except:
+        contest.save()
 
 
 class CreateContestAPIView(generics.ListAPIView):
@@ -77,6 +81,8 @@ class ContestAPIView(generics.ListAPIView):
         try:
             contest_id = request.GET.get("id", -1)
             cont = contest.Contest.get(id_contest=contest_id)
+            print(user.username)
+            print(contest_id)
             current_contest = contest_user.Contest_user.get(
                 id_user=user, id_contest=cont
             )
