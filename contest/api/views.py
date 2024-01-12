@@ -46,7 +46,6 @@ class CreateContestAPIView(generics.ListAPIView):
 class ContestAPIView(generics.ListAPIView):
     serializer_class = serializers.ContestSerializer
     queryset = []
-
     def get(self, request):
         contest_id = request.GET.get("id", -1)
         user = request.user
@@ -55,7 +54,7 @@ class ContestAPIView(generics.ListAPIView):
         if user is None or request.user.is_anonymous:
             return Response(status=401, data={"status": "error", "detail": "user is not authenticated"})
         if contest_id == -1:
-            user_contests = contest_user.Contest_user.filter(id_user=user)
+            user_contests = contest_user.Contest_user.filter(id_user=user, id_contest__archived=False)
             paginated_user_contests = paginator.paginate_queryset(user_contests, request)
             serializer = serializers.ContestSerializer(paginated_user_contests, many=True)
             return paginator.get_paginated_response(serializer.data)
@@ -97,6 +96,20 @@ class ContestAPIView(generics.ListAPIView):
         except:
             return Response(status=400, data={"status": "error", "detail": "incorrect contest"})
 
+class ArchivedContestAPIView(generics.ListAPIView):
+    serializer_class = serializers.ContestSerializer
+    queryset = []
+    def get(self, request):
+        contest_id = request.GET.get("id", -1)
+        user = request.user
+        paginator = ContestPagination()
+        print(request.user.username)
+        if user is None or request.user.is_anonymous:
+            return Response(status=401, data={"status": "error", "detail": "user is not authenticated"})
+        user_contests = contest_user.Contest_user.filter(id_user=user, id_contest__archived=True)
+        paginated_user_contests = paginator.paginate_queryset(user_contests, request)
+        serializer = serializers.ContestSerializer(paginated_user_contests, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
 class TaskAPIView(generics.ListAPIView):
     serializer_class = serializers.TaskSerializer
