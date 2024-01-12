@@ -5,6 +5,7 @@ from contest.api import views
 urlpatterns = [
     path("create-contest/", views.CreateContestAPIView.as_view()),
     path("user-contests/", views.ContestAPIView.as_view()),
+    path("user-contests/archived/", views.ArchivedContestAPIView.as_view()),
     path("contest-tasks/", views.TaskAPIView.as_view()),
     path("has-permission-to-contest/", views.HasPermissionToContestAPIView.as_view()),
 ]

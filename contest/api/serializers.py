@@ -73,6 +73,7 @@ class ContestSerializer(serializers.ModelSerializer):
         extra_kwargs = {"password": {"write_only": True}}
 
 
+
 class TaskSerializer(serializers.ModelSerializer):
     task_name = serializers.CharField(source="id_task.task_name")
     statement = serializers.CharField(source="id_task.statement")
