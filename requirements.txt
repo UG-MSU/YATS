@@ -3,3 +3,4 @@ Django-rest-framework
 django-cors-headers
 psycopg
 requests
+djangorestframework-simplejwt
