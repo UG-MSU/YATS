@@ -16,7 +16,7 @@ import os
 import subprocess
 import json
 import logging
-from container.container-lib import solve
+from container.container_lib import solve
 logger = logging.getLogger(__name__)
 
 
@@ -156,12 +156,12 @@ class SubmissionAPIView(generics.ListAPIView):
         user_id = user.id
         now = datetime.now()
         tm = now.strftime("%d-%m-%Y-%H-%M-%S")
-        destination = open(f'files/submissions/{cont_id}/{task_id}/{user_id}/{tm}_{up_file.name}', 'wb+')
-        for chunk in up_file.chunks():
-            destination.write(chunk)
-        destination.close()
+        #destination = open(f'files/submissions/{cont_id}/{task_id}/{user_id}/{tm}_{up_file.name}', 'wb+')
+        #for chunk in up_file.chunks():
+        #    destination.write(chunk)
+        #destination.close()
         lang = request.data["language"]
-        filename = f'files/submissions/{cont_id}/{task_id}/{user_id}/{tm}_{up_file.name}'
+        filename = f'files/submissions/1.cpp'
         try:
             b = ('.'.join(filename.split('.')[:-1])) + '.out'
 
@@ -174,7 +174,7 @@ class SubmissionAPIView(generics.ListAPIView):
         except:
             sub = submission(id_user=user,
                              id_task=task.Task.get(id_task=task_id),
-                             id_contest=contest.Contest.get(id_contest=cont_id), timestamp=now, status="CE",
+                             id_contest=contest.Contest.get(id_contest=cont_id), timestamp=now, status="COMPILATION ERROR",
                              executable_path=filename, lang=lang)
             sub.save()
             paginator = SubmissionPagination()
@@ -219,7 +219,7 @@ class SubmissionAPIView(generics.ListAPIView):
         else:
             sub = submission(id_user=user,
                              id_task=task.Task.get(id_task=task_id),
-                             id_contest=contest.Contest.get(id_contest=cont_id), timestamp=now, status="WA",
+                             id_contest=contest.Contest.get(id_contest=cont_id), timestamp=now, status="WRONG ANSWER",
                              executable_path=filename, lang=lang)
             sub.save()
             paginator = SubmissionPagination()

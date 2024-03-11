@@ -2,7 +2,6 @@ import sys
 sys.path.insert(0, '../container-lib/build/')
 from container_lib_py import Container, ContainerException, launch_options
 
-
 def solve(inputPath: str, programInput: str, timeLimit: int = 3000, maxForks: int = 8, maxMemory: int = 512):
     cont = Container()
     opt = launch_options()
@@ -25,4 +24,4 @@ def solve(inputPath: str, programInput: str, timeLimit: int = 3000, maxForks: in
         print("Container exception")
         print(e)
         return {"status": "cont_error", "error_msg": str(e)}
-solve("./a.out", "5\n")
+#solve("./a.out", "5\n")
