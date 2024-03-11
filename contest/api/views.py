@@ -156,26 +156,31 @@ class SubmissionAPIView(generics.ListAPIView):
         user_id = user.id
         now = datetime.now()
         tm = now.strftime("%d-%m-%Y-%H-%M-%S")
-        #destination = open(f'files/submissions/{cont_id}/{task_id}/{user_id}/{tm}_{up_file.name}', 'wb+')
-        #for chunk in up_file.chunks():
-        #    destination.write(chunk)
-        #destination.close()
+
+        submission_folder_path = f'files/submissions/{cont_id}/{task_id}/{user_id}'
+        submission_file_path = f"{submission_folder_path}/submission_{tm}.{up_file.name.split('.')[-1]}"
+        os.makedirs(submission_folder_path, exist_ok=True)
+        destination = open(submission_file_path, 'wb+')
+        for chunk in up_file.chunks():
+           destination.write(chunk)
+        destination.close()
+
         lang = request.data["language"]
-        filename = f'files/submissions/1.cpp'
+
         try:
-            b = ('.'.join(filename.split('.')[:-1])) + '.out'
+            b = ('.'.join(submission_file_path.split('.')[:-1])) + '.out'
 
             if lang[0] == 'c++':
-                subprocess.call(["g++", filename, f'-o{b}'])
+                subprocess.call(["g++", submission_file_path, f'-o{b}'])
             elif lang[0] == 'c':
-                subprocess.call(["gcc", filename, f'-o{b}'])
+                subprocess.call(["gcc", submission_file_path, f'-o{b}'])
             elif lang[0] == 'pascal':
-                subprocess.call(["gcc", filename, f'-o{b}'])
+                subprocess.call(["gcc", submission_file_path, f'-o{b}'])
         except:
             sub = submission(id_user=user,
                              id_task=task.Task.get(id_task=task_id),
                              id_contest=contest.Contest.get(id_contest=cont_id), timestamp=now, status="COMPILATION ERROR",
-                             executable_path=filename, lang=lang)
+                             executable_path=submission_file_path, lang=lang)
             sub.save()
             paginator = SubmissionPagination()
             submissions = submission.Submission.filter(id_user_id=user)
@@ -209,7 +214,7 @@ class SubmissionAPIView(generics.ListAPIView):
             sub = submission(id_user=user,
                              id_task=task.Task.get(id_task=task_id),
                              id_contest=contest.Contest.get(id_contest=cont_id), timestamp=now, status="OK",
-                             executable_path=filename, lang=lang)
+                             executable_path=submission_file_path, lang=lang)
             sub.save()
             paginator = SubmissionPagination()
             submissions = submission.Submission.filter(id_user_id=user)
@@ -220,7 +225,7 @@ class SubmissionAPIView(generics.ListAPIView):
             sub = submission(id_user=user,
                              id_task=task.Task.get(id_task=task_id),
                              id_contest=contest.Contest.get(id_contest=cont_id), timestamp=now, status="WRONG ANSWER",
-                             executable_path=filename, lang=lang)
+                             executable_path=submission_file_path, lang=lang)
             sub.save()
             paginator = SubmissionPagination()
             submissions = submission.Submission.filter(id_user_id=user)
