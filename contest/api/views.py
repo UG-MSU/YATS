@@ -17,6 +17,7 @@ import subprocess
 import json
 import logging
 from container.container_lib import solve
+from container.container_docker import run_python
 logger = logging.getLogger(__name__)
 
 
@@ -166,72 +167,119 @@ class SubmissionAPIView(generics.ListAPIView):
         destination.close()
 
         lang = request.data["language"]
-
-        try:
-            b = ('.'.join(submission_file_path.split('.')[:-1])) + '.out'
-
-            if lang[0] == 'c++':
-                subprocess.call(["g++", submission_file_path, f'-o{b}'])
-            elif lang[0] == 'c':
-                subprocess.call(["gcc", submission_file_path, f'-o{b}'])
-            elif lang[0] == 'pascal':
-                subprocess.call(["gcc", submission_file_path, f'-o{b}'])
-        except:
-            sub = submission(id_user=user,
-                             id_task=task.Task.get(id_task=task_id),
-                             id_contest=contest.Contest.get(id_contest=cont_id), timestamp=now, status="COMPILATION ERROR",
-                             executable_path=submission_file_path, lang=lang)
-            sub.save()
-            paginator = SubmissionPagination()
-            submissions = submission.Submission.filter(id_user_id=user)
-            paginated_submissions = paginator.paginate_queryset(submissions, request)
-            serializer = serializers.TaskSerializer(paginated_submissions, many=True)
-            return paginator.get_paginated_response(serializer.data)
-        tt = test.Test.get(id_task=task.Task.get(id_task=task_id))
-        json_file = tt.pathToFileWithTests
-        with open(json_file) as json_data:
-            data = json.load(json_data)
-        counter = 0
-        for i in range(len(data["tests"])):
+        if lang[0] == 'python':
+            tt = test.Test.get(id_task=task.Task.get(id_task=task_id))
+            json_file = tt.pathToFileWithTests
+            with open(json_file) as json_data:
+                data = json.load(json_data)
+            counter = 0
+            failed_test = 0
+            for i in range(len(data["tests"])):
+                k = run_python(submission_file_path, i['input'])
+                if (k == -1):
+                    failed_test = -1
+                    break
+                elif (i["output"] != k):
+                    failed_test += 1
+            if (failed_test == -1):
+                sub = submission(id_user=user,
+                                id_task=task.Task.get(id_task=task_id),
+                                id_contest=contest.Contest.get(id_contest=cont_id), timestamp=now, status="COMPILATION ERROR",
+                                executable_path=submission_file_path, lang=lang)
+                sub.save()
+                paginator = SubmissionPagination()
+                submissions = submission.Submission.filter(id_user_id=user)
+                paginated_submissions = paginator.paginate_queryset(submissions, request)
+                serializer = serializers.TaskSerializer(paginated_submissions, many=True)
+                return paginator.get_paginated_response(serializer.data)
+            elif (failed_test == 0):
+                sub = submission(id_user=user,
+                                id_task=task.Task.get(id_task=task_id),
+                                id_contest=contest.Contest.get(id_contest=cont_id), timestamp=now, status="OK",
+                                executable_path=submission_file_path, lang=lang)
+                sub.save()
+                paginator = SubmissionPagination()
+                submissions = submission.Submission.filter(id_user_id=user)
+                paginated_submissions = paginator.paginate_queryset(submissions, request)
+                serializer = serializers.TaskSerializer(paginated_submissions, many=True)
+                return paginator.get_paginated_response(serializer.data)
+            else:
+                sub = submission(id_user=user,
+                                id_task=task.Task.get(id_task=task_id),
+                                id_contest=contest.Contest.get(id_contest=cont_id), timestamp=now, status="WRONG_ANSWER",
+                                executable_path=submission_file_path, lang=lang)
+                sub.save()
+                paginator = SubmissionPagination()
+                submissions = submission.Submission.filter(id_user_id=user)
+                paginated_submissions = paginator.paginate_queryset(submissions, request)
+                serializer = serializers.TaskSerializer(paginated_submissions, many=True)
+                return paginator.get_paginated_response(serializer.data)
+        else:
             try:
-                out_dict = solve(b, data["tests"][i]["input"], data["tests"][i]["time"], 8, data["tests"][i]["memory"])
+                b = ('.'.join(submission_file_path.split('.')[:-1])) + '.out'
+
+                if lang[0] == 'c++':
+                    subprocess.call(["g++", submission_file_path, f'-o{b}'])
+                elif lang[0] == 'c':
+                    subprocess.call(["gcc", submission_file_path, f'-o{b}'])
+                elif lang[0] == 'pascal':
+                    subprocess.call(["gcc", submission_file_path, f'-o{b}'])
             except:
-                out_dict = dict()
-                out_dict["status"] = "run_failed"
-            if out_dict["status"] == "ok" and out_dict["container_output"]["out_buffer"] == data["tests"][i]["output"]:
-                counter += 1
-        try:
-            subprocess.call(["rm", b])
-        except:
-            logger.info('ERROR with STEP5')
+                sub = submission(id_user=user,
+                                id_task=task.Task.get(id_task=task_id),
+                                id_contest=contest.Contest.get(id_contest=cont_id), timestamp=now, status="COMPILATION ERROR",
+                                executable_path=submission_file_path, lang=lang)
+                sub.save()
+                paginator = SubmissionPagination()
+                submissions = submission.Submission.filter(id_user_id=user)
+                paginated_submissions = paginator.paginate_queryset(submissions, request)
+                serializer = serializers.TaskSerializer(paginated_submissions, many=True)
+                return paginator.get_paginated_response(serializer.data)
+            tt = test.Test.get(id_task=task.Task.get(id_task=task_id))
+            json_file = tt.pathToFileWithTests
+            with open(json_file) as json_data:
+                data = json.load(json_data)
+            counter = 0
+            for i in range(len(data["tests"])):
+                try:
+                    out_dict = solve(b, data["tests"][i]["input"], data["tests"][i]["time"], 8, data["tests"][i]["memory"])
+                except:
+                    out_dict = dict()
+                    out_dict["status"] = "run_failed"
+                if out_dict["status"] == "ok" and out_dict["container_output"]["out_buffer"] == data["tests"][i]["output"]:
+                    counter += 1
+            try:
+                subprocess.call(["rm", b])
+            except:
+                logger.info('ERROR with STEP5')
 
-        if counter == len(data["tests"]):
-            logger.info('All answers is correct')
-        else:
-            logger.info(f'Correct answers: {counter}/{len(data["tests"])}')
+            if counter == len(data["tests"]):
+                logger.info('All answers is correct')
+            else:
+                logger.info(f'Correct answers: {counter}/{len(data["tests"])}')
 
-        if counter == len(data["tests"]):
-            sub = submission(id_user=user,
-                             id_task=task.Task.get(id_task=task_id),
-                             id_contest=contest.Contest.get(id_contest=cont_id), timestamp=now, status="OK",
-                             executable_path=submission_file_path, lang=lang)
-            sub.save()
-            paginator = SubmissionPagination()
-            submissions = submission.Submission.filter(id_user_id=user)
-            paginated_submissions = paginator.paginate_queryset(submissions, request)
-            serializer = serializers.TaskSerializer(paginated_submissions, many=True)
-            return paginator.get_paginated_response(serializer.data)
-        else:
-            sub = submission(id_user=user,
-                             id_task=task.Task.get(id_task=task_id),
-                             id_contest=contest.Contest.get(id_contest=cont_id), timestamp=now, status="WRONG ANSWER",
-                             executable_path=submission_file_path, lang=lang)
-            sub.save()
-            paginator = SubmissionPagination()
-            submissions = submission.Submission.filter(id_user_id=user)
-            paginated_submissions = paginator.paginate_queryset(submissions, request)
-            serializer = serializers.TaskSerializer(paginated_submissions, many=True)
-            return paginator.get_paginated_response(serializer.data)
+            if counter == len(data["tests"]):
+                sub = submission(id_user=user,
+                                id_task=task.Task.get(id_task=task_id),
+                                id_contest=contest.Contest.get(id_contest=cont_id), timestamp=now, status="OK",
+                                executable_path=submission_file_path, lang=lang)
+                sub.save()
+                paginator = SubmissionPagination()
+                submissions = submission.Submission.filter(id_user_id=user)
+                paginated_submissions = paginator.paginate_queryset(submissions, request)
+                serializer = serializers.TaskSerializer(paginated_submissions, many=True)
+                return paginator.get_paginated_response(serializer.data)
+            else:
+                sub = submission(id_user=user,
+                                id_task=task.Task.get(id_task=task_id),
+                                id_contest=contest.Contest.get(id_contest=cont_id), timestamp=now, status="WRONG ANSWER",
+                                executable_path=submission_file_path, lang=lang)
+                sub.save()
+                paginator = SubmissionPagination()
+                submissions = submission.Submission.filter(id_user_id=user)
+                paginated_submissions = paginator.paginate_queryset(submissions, request)
+                serializer = serializers.TaskSerializer(paginated_submissions, many=True)
+                return paginator.get_paginated_response(serializer.data)
 
 
 class HasPermissionToContestAPIView(generics.ListAPIView):
