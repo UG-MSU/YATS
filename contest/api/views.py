@@ -167,7 +167,7 @@ class SubmissionAPIView(generics.ListAPIView):
         destination.close()
 
         lang = request.data["language"]
-        if lang[0] == 'python':
+        if lang == 'python':
             tt = test.Test.get(id_task=task.Task.get(id_task=task_id))
             json_file = tt.pathToFileWithTests
             with open(json_file) as json_data:
