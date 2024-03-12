@@ -25,6 +25,7 @@ class UpdateUserSerializer(serializers.ModelSerializer):
             "school",
             "password",
             "role",
+            "email"
         ]
         extra_kwargs = {
             "password": {"write_only": True},

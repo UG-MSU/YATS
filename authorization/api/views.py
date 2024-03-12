@@ -20,18 +20,21 @@ def update(request):
         and len(request.data["username"]) != 0
     ):
         request.user.username = request.data["username"]
+    if len(request.data["email"]) != 0:
+        request.user.email = request.data["email"]
     if len(request.data["first_name"]) != 0:
         request.user.first_name = request.data["first_name"]
     if len(request.data["patronymic"]) != 0:
-        request.user.first_name = request.data["patronymic"]
+        request.user.patronymic = request.data["patronymic"]
     if len(request.data["last_name"]) != 0:
-        request.user.first_name = request.data["last_name"]
+        request.user.last_name = request.data["last_name"]
     if len(request.data["country"]) != 0:
-        request.user.first_name = request.data["country"]
+        request.user.country = request.data["country"]
     if len(request.data["city"]) != 0:
-        request.user.first_name = request.data["city"]
+        request.user.city = request.data["city"]
     if len(request.data["school"]) != 0:
-        request.user.first_name = request.data["school"]
+        request.user.school = request.data["school"]
+
     if len(request.data["password"]) > 7 and len(request.data["password"]) < 33:
         request.user.set_password(request.data["password"])
     request.user.save()
