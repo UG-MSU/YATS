@@ -175,11 +175,11 @@ class SubmissionAPIView(generics.ListAPIView):
             counter = 0
             failed_test = 0
             for i in range(len(data["tests"])):
-                k = run_python(submission_file_path, i['input'])
+                k = run_python(submission_file_path, data["tests"][i]['input'])
                 if (k == -1):
                     failed_test = -1
                     break
-                elif (i["output"] != k):
+                elif (data["tests"][i]["output"] != k):
                     failed_test += 1
             if (failed_test == -1):
                 sub = submission(id_user=user,
@@ -218,11 +218,12 @@ class SubmissionAPIView(generics.ListAPIView):
             try:
                 b = ('.'.join(submission_file_path.split('.')[:-1])) + '.out'
 
-                if lang[0] == 'c++':
+                if lang == 'c++':
+                    print("I'm here")
                     subprocess.call(["g++", submission_file_path, f'-o{b}'])
-                elif lang[0] == 'c':
+                elif lang == 'c':
                     subprocess.call(["gcc", submission_file_path, f'-o{b}'])
-                elif lang[0] == 'pascal':
+                elif lang == 'pascal':
                     subprocess.call(["gcc", submission_file_path, f'-o{b}'])
             except:
                 sub = submission(id_user=user,
@@ -243,9 +244,11 @@ class SubmissionAPIView(generics.ListAPIView):
             for i in range(len(data["tests"])):
                 try:
                     out_dict = solve(b, data["tests"][i]["input"], data["tests"][i]["time"], 8, data["tests"][i]["memory"])
-                except:
+                except Exception as e:
+                    print(e)
                     out_dict = dict()
                     out_dict["status"] = "run_failed"
+                print(out_dict["status"])
                 if out_dict["status"] == "ok" and out_dict["container_output"]["out_buffer"] == data["tests"][i]["output"]:
                     counter += 1
             try:
