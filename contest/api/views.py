@@ -174,7 +174,7 @@ class SubmissionAPIView(generics.ListAPIView):
                 data = json.load(json_data)
             counter = 0
             failed_test = 0
-            for i in range(len(data["tests"])):
+            for i in data["tests"]:
                 k = run_python(submission_file_path, i['input'])
                 if (k == -1):
                     failed_test = -1
