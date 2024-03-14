@@ -35,15 +35,15 @@ def update(request):
     if len(request.data["school"]) != 0:
         request.user.school = request.data["school"]
 
-    if len(request.data["password"]) > 7 and len(request.data["password"]) < 33:
-        request.user.set_password(request.data["password"])
+    #if len(request.data["password"]) > 7 and len(request.data["password"]) < 33:
+    #    request.user.set_password(request.data["password"])
     request.user.save()
-    User = authenticate(
-        request=request,
-        username=request.user.username,
-        password=request.data["password"],
-    )
-    login(request, User)
+    #User = authenticate(
+    #    request=request,
+    #    username=request.user.username,
+    #    password=request.data["password"],
+    #)
+    #login(request, User)
 
 
 def show(request):

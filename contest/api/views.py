@@ -179,8 +179,10 @@ class SubmissionAPIView(generics.ListAPIView):
                 if (k == -1):
                     failed_test = -1
                     break
-                elif (i["output"] != k):
+                elif (i["output"].split() != k.split()):
                     failed_test += 1
+                print(k)
+            print(failed_test)
             if (failed_test == -1):
                 sub = submission(id_user=user,
                                 id_task=task.Task.get(id_task=task_id),
@@ -206,7 +208,7 @@ class SubmissionAPIView(generics.ListAPIView):
             else:
                 sub = submission(id_user=user,
                                 id_task=task.Task.get(id_task=task_id),
-                                id_contest=contest.Contest.get(id_contest=cont_id), timestamp=now, status="WRONG_ANSWER",
+                                id_contest=contest.Contest.get(id_contest=cont_id), timestamp=now, status="WRONG ANSWER",
                                 executable_path=submission_file_path, lang=lang)
                 sub.save()
                 paginator = SubmissionPagination()
@@ -247,7 +249,7 @@ class SubmissionAPIView(generics.ListAPIView):
                 except:
                     out_dict = dict()
                     out_dict["status"] = "run_failed"
-                if out_dict["status"] == "ok" and out_dict["container_output"]["out_buffer"] == data["tests"][i]["output"]:
+                if out_dict["status"] == "ok" and out_dict["container_output"]["out_buffer"][:-2] == data["tests"][i]["output"]:
                     counter += 1
             try:
                 subprocess.call(["rm", b])
