@@ -107,8 +107,20 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
 ]
-
+CORS_ALLOW_HEADERS = (
+    "accept",
+    "authorization",
+    "content-type",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+    "id-task",
+    "id-contest",
+    "language",
+    "content-disposition"
+)
 ROOT_URLCONF = "yats.urls"
+
 
 TEMPLATES = [
     {

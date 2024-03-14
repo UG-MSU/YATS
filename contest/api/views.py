@@ -16,6 +16,7 @@ import os
 import subprocess
 import json
 import logging
+from django import forms
 from container.container_lib import solve
 from container.container_docker import run_python
 logger = logging.getLogger(__name__)
@@ -83,6 +84,7 @@ class ContestAPIView(generics.ListAPIView):
         except:
             return Response(status=400, data={"status": "error", "detail": "incorrect contest"})
 
+
     def put(self, request):
         user = self.request.user
         if user is None:
@@ -142,17 +144,20 @@ class SubmissionAPIView(generics.ListAPIView):
 
     def get(self, request):
         paginator = SubmissionPagination()
-        user = self.request.user
+        user = request.user
         submissions = submission.Submission.filter(id_user_id=user)
         paginated_submissions = paginator.paginate_queryset(submissions, request)
-        serializer = serializers.TaskSerializer(paginated_submissions, many=True)
+        serializer = serializers.SubmissionSerializer(paginated_submissions, many=True)
         return paginator.get_paginated_response(serializer.data)
     def post(self, request):
         if request.user is None:
             return Response(status=401, data={"status": "error", "detail": "user is not authenticated"})
-        up_file = request.FILES['file']
-        cont_id = request.data["id_contest"]
-        task_id = request.data["id_task"]
+        print(request.body)
+        print(request.content_type)
+        up_file = request.FILES.get("media", None)
+        print(up_file)
+        cont_id = request.headers["id-contest"]
+        task_id = request.headers["id-task"]
         user = request.user
         user_id = user.id
         now = datetime.now()
@@ -166,7 +171,8 @@ class SubmissionAPIView(generics.ListAPIView):
            destination.write(chunk)
         destination.close()
 
-        lang = request.data["language"]
+
+        lang = request.headers["language"]
         if lang == 'python':
             tt = test.Test.get(id_task=task.Task.get(id_task=task_id))
             json_file = tt.pathToFileWithTests
@@ -192,7 +198,7 @@ class SubmissionAPIView(generics.ListAPIView):
                 paginator = SubmissionPagination()
                 submissions = submission.Submission.filter(id_user_id=user)
                 paginated_submissions = paginator.paginate_queryset(submissions, request)
-                serializer = serializers.TaskSerializer(paginated_submissions, many=True)
+                serializer = serializers.SubmissionSerializer(paginated_submissions, many=True)
                 return paginator.get_paginated_response(serializer.data)
             elif (failed_test == 0):
                 sub = submission(id_user=user,
@@ -203,7 +209,7 @@ class SubmissionAPIView(generics.ListAPIView):
                 paginator = SubmissionPagination()
                 submissions = submission.Submission.filter(id_user_id=user)
                 paginated_submissions = paginator.paginate_queryset(submissions, request)
-                serializer = serializers.TaskSerializer(paginated_submissions, many=True)
+                serializer = serializers.SubmissionSerializer(paginated_submissions, many=True)
                 return paginator.get_paginated_response(serializer.data)
             else:
                 sub = submission(id_user=user,
@@ -214,11 +220,12 @@ class SubmissionAPIView(generics.ListAPIView):
                 paginator = SubmissionPagination()
                 submissions = submission.Submission.filter(id_user_id=user)
                 paginated_submissions = paginator.paginate_queryset(submissions, request)
-                serializer = serializers.TaskSerializer(paginated_submissions, many=True)
+                serializer = serializers.SubmissionSerializer(paginated_submissions, many=True)
                 return paginator.get_paginated_response(serializer.data)
         else:
             try:
                 b = ('.'.join(submission_file_path.split('.')[:-1])) + '.out'
+
 
                 if lang == 'c++':
                     print("I'm here")
@@ -236,7 +243,7 @@ class SubmissionAPIView(generics.ListAPIView):
                 paginator = SubmissionPagination()
                 submissions = submission.Submission.filter(id_user_id=user)
                 paginated_submissions = paginator.paginate_queryset(submissions, request)
-                serializer = serializers.TaskSerializer(paginated_submissions, many=True)
+                serializer = serializers.SubmissionSerializer(paginated_submissions, many=True)
                 return paginator.get_paginated_response(serializer.data)
             tt = test.Test.get(id_task=task.Task.get(id_task=task_id))
             json_file = tt.pathToFileWithTests
@@ -270,7 +277,7 @@ class SubmissionAPIView(generics.ListAPIView):
                 paginator = SubmissionPagination()
                 submissions = submission.Submission.filter(id_user_id=user)
                 paginated_submissions = paginator.paginate_queryset(submissions, request)
-                serializer = serializers.TaskSerializer(paginated_submissions, many=True)
+                serializer = serializers.SubmissionSerializer(paginated_submissions, many=True)
                 return paginator.get_paginated_response(serializer.data)
             else:
                 sub = submission(id_user=user,
@@ -281,7 +288,7 @@ class SubmissionAPIView(generics.ListAPIView):
                 paginator = SubmissionPagination()
                 submissions = submission.Submission.filter(id_user_id=user)
                 paginated_submissions = paginator.paginate_queryset(submissions, request)
-                serializer = serializers.TaskSerializer(paginated_submissions, many=True)
+                serializer = serializers.SubmissionSerializer(paginated_submissions, many=True)
                 return paginator.get_paginated_response(serializer.data)
 
 
