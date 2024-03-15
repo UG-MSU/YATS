@@ -137,6 +137,18 @@ class TaskAPIView(generics.ListAPIView):
         serializer = serializers.TaskSerializer(paginated_tasks, many=True)
         return paginator.get_paginated_response(serializer.data)
 
+class GetSubmissionAPIView(generics.ListAPIView):
+    serializer_class = serializers.SubmissionSerializer
+    queryset = submission.Submission.all()
+
+    def get(self, request):
+        paginator = SubmissionPagination()
+        user = request.user
+        id_task = request.data["id_task"]
+        submissions = submission.Submission.filter(id_user_id=user, id_task=task.Task.get(id_task=id_task))
+        paginated_submissions = paginator.paginate_queryset(submissions, request)
+        serializer = serializers.SubmissionSerializer(paginated_submissions, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
 class SubmissionAPIView(generics.ListAPIView):
     serializer_class = serializers.SubmissionSerializer
