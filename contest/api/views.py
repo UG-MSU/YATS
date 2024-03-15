@@ -144,7 +144,9 @@ class GetSubmissionAPIView(generics.ListAPIView):
     def get(self, request):
         paginator = SubmissionPagination()
         user = request.user
-        id_task = request.data["id_task"]
+        id_task = request.GET.get("id", -1)
+        if id_task == -1:
+            return Response(status=400, data={"status": "error", "detail": "task is not defined"})
         submissions = submission.Submission.filter(id_user_id=user, id_task=task.Task.get(id_task=id_task))
         paginated_submissions = paginator.paginate_queryset(submissions, request)
         serializer = serializers.SubmissionSerializer(paginated_submissions, many=True)
