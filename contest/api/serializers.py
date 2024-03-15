@@ -77,10 +77,11 @@ class ContestSerializer(serializers.ModelSerializer):
 class TaskSerializer(serializers.ModelSerializer):
     task_name = serializers.CharField(source="id_task.task_name")
     statement = serializers.CharField(source="id_task.statement")
+    id_task = serializers.IntegerField(source="id_task.id_task")
 
     class Meta:
         model = contest_task
-        fields = ("task_name", "statement")
+        fields = ("task_name", "statement", "id_task")
 
 
 class SubmissionSerializer(serializers.ModelSerializer):
